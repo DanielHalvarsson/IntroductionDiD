@@ -291,7 +291,7 @@ How is it connected to causality
 
 \begin{column}{0.5\textwidth}
  \begin{center}
-        \includegraphics[width=1\linewidth]{AEA_DiD.png}
+        \includegraphics[width=1\linewidth]{24_DiDLecture/24_DiDLecture_AEA_DiD.png}
     \end{center}
 \end{column}
 \end{columns}
@@ -577,12 +577,51 @@ Y = \alpha_i + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilo
 \end{enumerate}
 \end{frame}
 
-\begin{frame}{What about covariates?}
-    TWFE
+\begin{frame}{What to do when the parallell assumption is likely violated?}
+   \begin{itemize}
+       \item In the basic DiD setting, you generally wont fix a violation in the parallel trends assumption by adding a bunch of covariates.
+       \item Why?
+       \item Because time invariant covariates are already controlled for by the fixed effect version of the DiD.
+       \item Adding time-varying covariates can destroy identification if they themselves are caused by the treatment.
+       \item A common option is to look for a better control group by using some form of \textbf{statistical matching}, e.g. propensity score matching.
+       \item If matching is successful, there is a good chance that the parallel trends assumption is more likely to hold.
+   \end{itemize}
 \end{frame}
 
 \begin{frame}{Dynamic DiD: long-term effects}
-    
+    \begin{itemize}
+        \item So far, even with access to multiple periods, we have lumped the periods together in the period before and after treatment
+        \item However, by only looking at one potential effect, useful information about how the effect changes over time may be lost.
+        \item For example, it may take some time for an effect to materialize or it may taper off. 
+        \item Starting from the fixed effect DiD regression, the dynamic version replaces the $AfterTreatment$ dummy in the interaction term with separate dummies for each year, both before and after treatment. 
+        \item For example, a design with six periods and treatment in period four, the dynamic DiD can be written as,
+        \begin{equation}
+            Y = \alpha_i + \alpha_{t} + \left(\beta_{1}D_{-3}+\beta_{2} D_{-2} +\beta_{3} D_{0} + \beta_{4} D_{1}+ \beta_{5} D_{2} + \beta_{6} D_{3} \right) \times AfterTreatment + \epsilon.
+        \end{equation}
+        \item Often times, calender time is replaced with relative-treatment time.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{Let's code the dynamic DiD}
+    \begin{enumerate}
+        \item Using the organ donation data, let's code the dynamic version of the DiD.
+        \item What is the interpretation?
+    \end{enumerate}
+    \vspace{1cm}
+    \begin{center}
+        \includegraphics[width=0.6\linewidth]{24_DiDLecture/24_DiDLecture_DynamicDiD.png}
+    \end{center}
+\end{frame}
+
+\begin{frame}{Insights from the dynamic specification}
+\begin{itemize}
+\item In addition to the additional insights that about treatment-effect dynamics
+\item The dynamic DiD provides a direct test for parallel pretrends. 
+\item For each of the pretreatment gaps, they should not be larger or smaller compared to the gap before the treatment takes place.
+\item The dynamic DiD works well when there is only one treated group. 
+\item However, when there are many treated groups with varying treatment timing, dynamic DiD can not be trusted.
+
+\end{itemize}
 \end{frame}
 
 
@@ -591,7 +630,7 @@ Y = \alpha_i + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilo
           \item Expands the dynamic DiD designs to allow for \textit{multiple groups} with \textit{different treatment adoption dates}. \item Example is a policy with a regional roll-out such that the policy is adopted in different areas at different dates.
 \vspace{1cm}
     \begin{center}
-        \includegraphics[width=0.6\linewidth]{StaggeredRollout.png}
+        \includegraphics[width=0.6\linewidth]{24_DiDLecture/24_DiDLecture_StaggeredRollout.png}
     \end{center}
           
       \end{wideitemize}
@@ -609,7 +648,7 @@ Y = \alpha_i + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilo
     \hfill%
     \begin{column}{.4\textwidth}
     \begin{center}
- \includegraphics[width=0.65\linewidth]{GoT.png}                 
+ \includegraphics[width=0.65\linewidth]{24_DiDLecture/24_DiDLecture_GoT.png}                 
     \end{center}
     \end{column}
   \end{columns}
@@ -718,15 +757,36 @@ Y = \alpha_i + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilo
     \item It's then up to you to avoid making bad comparisons when averaging coefficients to get e.g. the time-varying treatment effect (see example below).
 
     \item Each effect is either compared to the group of (i) never treated observation or (ii) not yet treated observations (from the last treated group(s)).
-    
 \end{wideitemize}
 \end{frame}
 
 \begin{frame}{Modified event-study design: Sun and Abraham, 2020}
-\begin{wideitemize}
-    \item Sun and Abraham (2020) can be accessed in Stata using the \textbf{eventstudyintereact} package. 
-   
-\end{wideitemize}
+\begin{itemize}
+    \item Sun and Abraham (2020) can be accessed in Stata using the \textbf{eventstudyintereact} package.
+\end{itemize}
+\begin{enumerate}
+    \item Let's try it out!
+\end{enumerate}
+\vspace{0.5cm}
+    \begin{center}
+        \includegraphics[width=0.6\linewidth]{24_DiDLecture/24_DiDLecture_SunAndAbraham.png}
+    \end{center} 
+\end{frame}
+
+\begin{frame}{Interpreting the results from the union application}
+\begin{itemize}
+    \item The gap between treated and untreated in the pretreatment period is smaller compared to the gap in the period before treatment.
+    \item Why?
+    \item Possibly because the gap suddenly increases just before becoming union member.
+    \item It's difficult to speculate without looking closer at the data, but the pattern would agree with a situation where wages in the treated group shoots up the year before the join the union.
+    \item Regardless if this is the case, it would be difficult to convince someone that the parallel trends assumption is satisfied.
+\end{itemize}
 \end{frame}
 
 \end{document}
+
+-Show them how to use regress from the menue 
+-Programs that we use 
+-Upload do-files
+-Pdf
+-Find funny DiD excersizes
