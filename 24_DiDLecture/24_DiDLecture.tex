@@ -282,8 +282,7 @@
         \begin{itemize}        
         \item Since out plan was to use the control group to "represent all changes \textbf{within the treatment group} that is not due to the treatment", the DiD estimate the effect for the treated group. 
 
-        \item If certain conditions are satisfied, the DiD estimate represents a well defined causal parameter referred to the as average treatment effect of the treated (ATT). \textbf{This is the connection between DiD and causality.}
-
+        \item If certain conditions are satisfied, specifically the assumption of so called \textbf{parallel trends}, the DiD estimate represents a well defined causal parameter, namely the average treatment effect of the treated (ATT). \textbf{This is the connection between DiD and causality.}
         \item For the DiD estimate, therefore, we could not know if the treatment effect would be any different for other groups!        
     \end{itemize}
 \end{frame}
@@ -331,7 +330,6 @@
 \end{columns}
 \end{frame}
 
-
 \begin{frame}{Let's work through an example using real data}
 \begin{itemize}
     \item We are going to use the data from the paper by Kessler and Roth (2014) called \emph{Don't take "no" for an answer: And experiment with actual organ donor registrations} 
@@ -349,14 +347,13 @@
     \item Data over US organ donation rates:
 \end{itemize}
 
-\href{https://github.com/NickCH-K/causaldata/blob/main/Stata/}{\textcolor{blue}{https://github.com/NickCH-K/causaldata/blob/main/Stata/}}
-
+\href{https://github.com/DanielHalvarsson/IntroductionDiD/}{\textcolor{blue}{https://github.com/DanielHalvarsson/\\IntroductionDiD/}}
 \begin{itemize}
     \item Download the data manually using the above link. And open the data file from within stata.
-    \item Alternatively, the data can be retrieve directly from within Stata using the same link.
+    \item Alternatively, the data can be retrieve directly from within Stata by linking directly to the 'organ\_donations.dta' file.
+    \item To follow along, you need the following Stata packages: $reghdfe$
 \end{itemize}
 \end{column}
-
 \begin{column}{0.5\textwidth}
  \begin{center}
         \includegraphics[width=0.7\linewidth]{24_DiDLecture/24_DiDLecture_LoadData.png}
@@ -449,39 +446,12 @@ TretmentEffect + OtherTreatedGroupChanges - OtherTreatedGroupChanges
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Pre-testing and structural assumptions}
-  \begin{wideitemize}
-  \item To partially test the assumption we can impose a stronger assumption about trends
-      \begin{wideitemize}
-      \item If the common trends assumption applies to \textbf{all periods}, not just the post-periods in combination with no-anticipation we expect that $ATT(t_0,t_0-h)=0$. Thus, rejection the null that $\alpha_h=0$ implies that the stronger common trend + no anticipation assumption fail.
-      \end{wideitemize}
-      \item This is very powerful and has helped spark the growth in DinD regressions
-    \begin{itemize}
-    \item Visual demonstrate of ``pre-trends''\textbf{ helps support the validity of the design}
-    \item Worth doing!
-    \end{itemize}
-  \item Two key issues:
-    \begin{enumerate}
-    \item Pre-testing can cause statistical problems as it will cause you to potentially contaminate your
-      design.
-    \begin{itemize}
-    \item See suggested solution from Roth (2020) to incorporate robustness to
-    pre-trends into your analysis. Rambachan and Roth (2020) present
-    results on testing sensitivity of DiD results to pre-trends.
-    \end{itemize}
-    \item What do parallel trends even mean? 
-    \begin{itemize}
-    \item Roth and Sant'Anna (2021) directly discuss this issue at length.
-    \end{itemize}
-    \end{enumerate}
-  \end{wideitemize}
-\end{frame}
-
 \begin{frame}{Additional implications of the parallel trends assumption}
 \begin{itemize}
     \item The parallel trends assumption is not only an assumption about causality, but also about the gap (or difference) that is supposed to remain constant.
     \item Therefore, if the parallel trends assumption holds for some '$Y$' it does not hold for transformations of '$Y$', which includes '$\log Y $'
     \item It is easy to see that if the gap before the treatment was e.g. $20-10 = 10$ and the counterfactual difference after the treatment was $25-15 = 10$, in logs we get $\ln 20 - \ln 10\approx0.3$ and $\ln 25 - \ln 15\approx0.22$. 
+    \item Finally, there is a risk of pre-testing, as it can cause statistical problems by potentially contaminating your design.
 \end{itemize}
 \end{frame}
 
@@ -493,7 +463,6 @@ TretmentEffect + OtherTreatedGroupChanges - OtherTreatedGroupChanges
 \item However, with more than two time periods we should move DiD into a regression framework.
 \end{itemize}
 \end{frame}
-
 
 \begin{frame}{Difference-in-Difference in a regression setting}
 \begin{itemize}
@@ -525,7 +494,7 @@ Y = &\beta_0 + \beta_1 AfterTreatment + \beta_2 TreatedGroup\\ \nonumber
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Generalization of DiD to many periods, but still two groups}
+\begin{frame}{Generalization of DiD to many periods}
 \begin{itemize}
 \item For now we only consider one common effect for the treated group. Later we will allow for dynamic treatment effects.
 \item Even with more periods, it's always possible to estimate the $2\times2$ DiD by combining time periods or by aggregating data. 
@@ -606,7 +575,7 @@ Y = \alpha_i + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilo
 \end{enumerate}
 \end{frame}
 
-\begin{frame}{What to do when the parallell assumption is likely violated?}
+\begin{frame}{What to do when the parallel assumption is likely violated?}
    \begin{itemize}
        \item In the basic DiD setting, you generally wont fix a violation in the parallel trends assumption by adding a bunch of covariates.
        \item Why?
@@ -661,7 +630,7 @@ Y = \alpha_i + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilo
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Insights from the dynamic specification}
+\begin{frame}{Insights from the dynamic specification cont.} 
 \begin{itemize}
 \item However, as three are less data devoted to estimating each of the effects, expect less precise estimate.
 \item Even if the individual effects is significant, the average overall effect can still be significant!  
@@ -669,7 +638,6 @@ Y = \alpha_i + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilo
 
 \end{itemize}
 \end{frame}
-
 
 \begin{frame}{Roll-out adoption (staggered treatment) design}
       \begin{wideitemize}
