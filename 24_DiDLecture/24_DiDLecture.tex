@@ -188,20 +188,26 @@
 2. 
 \end{frame}
 
-\begin{frame}{What do we want?}
+\begin{frame}{Why we interested in difference-in-difference}
     \begin{itemize}
-        \item We want to understand the causal effect of some treatment e.g. a policy across different groups.
+        \item Because we want to understand the causal effect of some \textbf{treatment} e.g. a policy across different groups.
         \item What is the causal effect of some 'X' on 'Y'?
-        \item But different groups have different characteristics, which in turn may be correlated with the policy assignment.
+        \item We have access to observational data on 'X' and 'Y', and data on other characteristics for the different groups.
+        \item The challenge...
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{The main challenge with causal analysis}
+    \begin{itemize}
+        \item Different groups have different characteristics, which in turn may be correlated with the policy assignment.
         \item How then can we attempt to discover the causal effect without it being confounded by the different group characteristics?
     \end{itemize}
 \end{frame}
 
-\begin{frame}{What do we want?}
+% Now repeat the same slide with "Difference-in-Difference" 
+\begin{frame}{The main challenge with causal analysis}
     \begin{itemize}
-        \item We want to understand the causal effect of some treatment e.g. a policy across different groups.
-        \item What is the causal effect of some 'X' on 'Y'?
-        \item But different groups have different characteristics, which in turn may be correlated with the policy assignment.
+        \item Different groups have different characteristics, which in turn may be correlated with the policy assignment.
         \item How then can we attempt to discover the causal effect without it being confounded by the different group characteristics?
     \end{itemize}
     \flushright
@@ -209,7 +215,8 @@
     \textcolor{orange}{\huge{Difference-In-Difference}}
 \end{frame}
 
-\begin{frame}{What is causality?}
+
+\begin{frame}{First a word about causality?}
     \begin{itemize}
         \item What do we mean by "What is the causal effect of some 'X' on 'Y'?"
         \item There are many ways to define causality.
@@ -228,41 +235,70 @@
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Who gets the treatment?}
-Causal effects heterogeneity
-treatment groups, ATT 
-\end{frame}
-
-\begin{frame}{What is DiD?}
+\begin{frame}{Effect heterogeneity}
 \begin{itemize}
-        \item The plan is to use the change in some untreated control group to represent all changes in the treatment group that is not due to the treatment. 
-        
-        \item If we intervene to change X, the value of Y does not actually have to change, but only the probability that Y occurs. 
-    \end{itemize}
-
-The idea beind DiD is to compare effects over time between a treated group and a control group.
-
-Before and after treatment
-How is it connected to causality
-
+    \item The notion of a single causal effect in social science is  perhaps best described as a fiction. Take the example of a new drug, while it may be very effective for someone, it has no or adverse effect for someone else, be it because of their e.g. gender, body chemistry, or age. 
+    \item This type of effect-variety is called \textbf{heterogeneous treatment effects}
+    \item It's possible to estimate the distribution of these effects, e.g. to predict a specific effect that pertains to an individual with certain characteristics (personalized medicine).
+    \item But in terms of estimating causal effects in social science, we are generally after some form of \textbf{average effect}.
+\end{itemize}
 \end{frame}
 
-\begin{frame}{The use of DiD is old}
+\begin{frame}{Treatment-effect averages}
+\begin{itemize}
+    \item Having established the notion of heterogeneous treatment effects, we can consider the mean effect, i.e. \textbf{the average treatment effect} (ATE)
+    \item Often times it is the ATE that we would like to know. If we implement a policy on everyone, what would be it's average effect?
+
+    \item However, it's not always possible to estimate the ATE or sometimes not even desirable. The ATE for a new treatment of testicular or breast cancer is not desirable in determining it's effectualness.
+
+    \item In running a medical trial, surely the participants are limited to either women or men. In this case, the average refers to the CATE, which stands for the conditional ATE, where the condition could be being male or female.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{The average treatment effect of the treated (ATT)}
+\begin{itemize}
+      \item Because of research design (such as with DiD), we often end up estimating something else, which is the average effect for the group that gets treated, in other words the \textbf{average treatment effect of the treated} (ATT or ATET)
+
+      \item However, should we have a large random sample there is rather likely that ATT = ATE (or CATE when it's applicable)
+
+      \item As for the ATE. In a random control trial, when the sample is representative of the population the  effect corresponds to the ATE. If it's not representative, it's conditional on being in the sample.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Difference-in-Difference: What is it?}
+\begin{itemize}
+        \item Difference-in-differences is a statistical method or technique popular in social science with observational data that mimics an experimental research design. 
+
+        \item It relies on two groups; one treated and one untreated control group. In DiD, the outcome is first measured over time for each group (the first difference) and the compared against one another (second difference). The result from these two differences can be a causal estimate. 
+
+        \item Importantly, the notion of a control group is a place holder for "our best guess at what the treatment group would have been without treatment" \tiny{ (\emph{The Effect, p.450}, Huntington-Klein)}.
+        
+        \item \textbf{The plan} with DiD is to use the change within some untreated control group to represent all changes within the treatment group that is not due to the treatment.
+\end{itemize}
+\normalsize
+\end{frame}
+
+\begin{frame}{What does the DiD results actually mean and is the effect really causal?}
+        \begin{itemize}        
+        \item Since out plan was to use the control group to "represent all changes \textbf{within the treatment group} that is not due to the treatment", the DiD estimate the effect for the treated group. 
+
+        \item If certain conditions are satisfied, the DiD estimate represents a well defined causal parameter referred to the as average treatment effect of the treated (ATT). \textbf{This is the connection between DiD and causality.}
+
+        \item For the DiD estimate, therefore, we could not know if the treatment effect would be any different for other groups!        
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{The history of DiD goes back more than 150 years}
     \begin{itemize}
-        \item John Snow (Aegon Targaryen) demonstrated for the first time in 1855 that cholera was spread by contaminated water and not through the air. 
-        \item Between 1849 and 1854 the Lambeth Company was required to move their water intake upstream outside of London. 
+        \item Today somewhat of a cliché, but still very instructional.
+        \item In 1855, John Snow (like an Aegon Targaryen) demonstrated for the first time and for the world that cholera was spread by contaminated water and not through the air. 
+        \item The culprit, water intake downstream the Thames contained all sorts of sewage waste.
+        \item Between 1849 and 1854 a policy was implemented that required the Lambeth Company move their water intake upstream outside of London. 
         \item The results...        
     \end{itemize}
-
-\begin{figure}[H]
-\centering
-        \includegraphics[width=1\linewidth]{24_DiDLecture/24_DiDLecture_John Snow.png}
-    \tiny (\emph{The Effect, p.438}, Huntington-Klein)
-
-\end{figure}
 \end{frame}
 
-\begin{frame}{The idea behind DiD is very old}
+\begin{frame}{What happened with death rate in areas served by the Lambeth company?}
 \begin{figure}[H]
 \centering
         \includegraphics[width=1\linewidth]{24_DiDLecture/24_DiDLecture_John Snow.png}
@@ -277,14 +313,12 @@ How is it connected to causality
 \end{itemize}
 \end{frame}
 
-
-
-\begin{frame}{Difference-in-Difference and its relevance today}
+\begin{frame}{Difference-in-Difference is still very much relevant in empirical social science research}
 \begin{columns}
 \begin{column}{0.5\textwidth}
   \begin{itemize}
-        \item Difference-in-Difference (or DiD) is one of the most widely used methods for estimating causal effects in non-experimental settings. 
-
+        \item In econmics, Difference-in-Difference (or DiD) is today arguably the most widely used method for estimating causal effects in non-experimental settings. 
+        
         \item An early and influential study is David Card (1990), \emph{The Impact of the Mariel boatlift on the Miami labor market}, IRL Review 43(2):245-257. 
     \end{itemize}
 \end{column}
@@ -295,22 +329,17 @@ How is it connected to causality
     \end{center}
 \end{column}
 \end{columns}
-
 \end{frame}
 
 
-\begin{frame}{Let's work through an example}
+\begin{frame}{Let's work through an example using real data}
 \begin{itemize}
     \item We are going to use the data from the paper by Kessler and Roth (2014) called \emph{Don't take "no" for an answer: And experiment with actual organ donor registrations} 
-
     \item Most US states have so called "opt-in" (as opposed to "opt out") organ donation programs. When you get your drivers license you can choose to partake in the organ donation program.
-
     \item In July 2011, California implemented a policy to switch from an "opt-in" program to one with "active choice", of either yes or no. 
-
-    \item Did the policy causally affect the donation rate \underline{in California}
+    \item Did the policy positively affect the donation rate \underline{in California}, as believed by the policy makers? 
 \end{itemize}
 \end{frame}
-
 
 \begin{frame}{Organ donation rates in the US}
 \begin{columns}
@@ -613,12 +642,29 @@ Y = \alpha_i + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilo
     \end{center}
 \end{frame}
 
+\begin{frame}{Interpreting the dynamic DiD results}
+\begin{itemize}
+\item Near zero effects during the pretreatment period (compared to Q22011)
+\item One badly behaving pre-treatment effect
+\item Yet, three distinct negative effects immediately following the policy.
+\item In accordance with the $2\times2$ DiD design, the dynamic DiD finds a -2.2 percentage point decrease in organ donation rates in California as a result of active choice.
+\end{itemize}
+\end{frame}
+
+
 \begin{frame}{Insights from the dynamic specification}
 \begin{itemize}
 \item In addition to the additional insights that about treatment-effect dynamics
-\item The dynamic DiD provides a direct test for parallel pretrends. 
-\item For each of the pretreatment gaps, they should not be larger or smaller compared to the gap before the treatment takes place.
-\item The dynamic DiD works well when there is only one treated group. 
+\item The dynamic DiD provides a direct test for parallel \textbf{pre}trends (a type of placebo test).
+\item For each of the pretreatment gaps, they should not be larger or smaller compared to the gap before the treatment takes place, i.e. the reference.
+\item With many pre-periods, however, there can be significant effects due to pure chance. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Insights from the dynamic specification}
+\begin{itemize}
+\item However, as three are less data devoted to estimating each of the effects, expect less precise estimate.
+\item Even if the individual effects is significant, the average overall effect can still be significant!  
 \item However, when there are many treated groups with varying treatment timing, dynamic DiD can not be trusted.
 
 \end{itemize}
