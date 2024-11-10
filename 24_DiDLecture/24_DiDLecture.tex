@@ -182,16 +182,38 @@
 \maketitle
 \end{frame}
 
-\begin{frame}{What we will cover}
+\begin{frame}{What we will cover:}
+\begin{enumerate}
+\item Causality
+\item Treatment effects 
+\item *Basics of $2\times 2$ Difference-in-Difference
+\item *Difference-in-Difference via regression analysis
+\item Understanding the parallel trends assumption
+\item *Evaluating research design (testing pretreatment trends and placebo tests)
+\item *Dynamic Difference-in-Difference with multiple time periods
+\item *Difference-in-Difference with roll-out design 
+\end{enumerate}
+\vspace{0.5cm}
+Topics with an * includes a step-by-step coding exercise where you are invited to follow along in Stata. 
+\end{frame} 
 
-1.Stata excercise Load example data, Clean it, Calculate 2x2 Difference in diff 
-2. 
-\end{frame}
+\begin{frame}{About the course material: Some house keeping}
+\begin{itemize}
+    \item Data, Stata code, lecture material, and home assignment can all be accessed at 
+    \href{https://github.com/DanielHalvarsson/IntroductionDiD/}{\textcolor{blue}{https://github.com/DanielHalvarsson/IntroductionDiD/}}
 
-\begin{frame}{Why we interested in difference-in-difference}
+    \item Much of this course is based on the book "The Effect" by Nick Huntington-Klein, which provides an excellt resource for not just Difference-in-Difference, but empirical research techniques and methods in general.
+
+    \item The Effect is open source and can be freely accessed via 
+    \href{https://theeffectbook.net/}{\textcolor{blue}{https://theeffectbook.net/}}
+\end{itemize}
+\end{frame} 
+
+
+\begin{frame}{Why are we interested in difference-in-difference?}
     \begin{itemize}
         \item Because we want to understand the causal effect of some \textbf{treatment} e.g. a policy across different groups.
-        \item What is the causal effect of some 'X' on 'Y'?
+        \item What is the causal effect of some policy variable 'X' on some outcome 'Y'?
         \item We have access to observational data on 'X' and 'Y', and data on other characteristics for the different groups.
         \item The challenge...
     \end{itemize}
@@ -208,13 +230,12 @@
 \begin{frame}{The main challenge with causal analysis}
     \begin{itemize}
         \item Different groups have different characteristics, which in turn may be correlated with the policy assignment.
-        \item How then can we attempt to discover the causal effect without it being confounded by the different group characteristics?
+        \item How then can we attempt to discover the causal effect without it being confounded by the different group characteristics? 
     \end{itemize}
     \flushright
     \vspace{1cm}
     \textcolor{orange}{\huge{Difference-In-Difference}}
 \end{frame}
-
 
 \begin{frame}{First a word about causality?}
     \begin{itemize}
@@ -232,34 +253,56 @@
 \begin{itemize}
         \item By distribution, we are here thinking about probabilities
         \item If we intervene to change X, the value of Y does not actually have to change, but only the probability that Y occurs. 
+        \item This notion of causality is distinct from the legal concept of causality. 
     \end{itemize}
 \end{frame}
 
+
+
+\begin{frame}{Causal effects among a sea of confounders}
+    \begin{center}
+        \includegraphics[width=0.8\linewidth]{24_DiDLecture/24_DiDLecture_DAG.png}
+    \end{center}
+    \flushright
+    \tiny{ (\emph{The Effect, p.450}, Huntington-Klein)}.
+\normalsize
+\flushleft
+    \vspace{0.1cm}
+    \begin{itemize}
+    \item In answering a causal research question we need to account for other variables that also contribute to the the outcome in question, one way or another. 
+    \item In the example DAG, without appropriate control for LaggedCrime, we could e.g. erroneously attribute higher crime rates to less PolicePerCapita.    
+    \item There are many way to accomplish this: using control variables, taking advantage of different fixed effects, randomization, using variation from a natural experiment, choosing an appropriate control group.
+    \item Ultimately it depends on the question what we need to do, but also the assumptions underlying the method we choose.
+    \end{itemize}
+\end{frame}
+
+
 \begin{frame}{Effect heterogeneity}
 \begin{itemize}
-    \item The notion of a single causal effect in social science is  perhaps best described as a fiction. Take the example of a new drug, while it may be very effective for someone, it has no or adverse effect for someone else, be it because of their e.g. gender, body chemistry, or age. 
-    \item This type of effect-variety is called \textbf{heterogeneous treatment effects}
-    \item It's possible to estimate the distribution of these effects, e.g. to predict a specific effect that pertains to an individual with certain characteristics (personalized medicine).
-    \item But in terms of estimating causal effects in social science, we are generally after some form of \textbf{average effect}.
+    \item The notion of a single causal effect in social science is  perhaps best described as fiction. Take the example of a new drug, while it may be very effective for some, it has no or adverse effect for others, be it because of their e.g. gender, body chemistry, or perhaps age. 
+    \item This type of effect-variety is referred to as \textbf{heterogeneous treatment effects}
+    \item It's possible to estimate the distribution of these effects, e.g. to predict a specific effect that pertains to an individual with certain characteristics, like in personalized medicine, often times base on \textbf{machine learning}.
+    \item But in terms of estimating causal effects in social science, we are generally after some form of \textbf{average effect}. Yes there are many!
 \end{itemize}
 \end{frame}
 
 \begin{frame}{Treatment-effect averages}
 \begin{itemize}
-    \item Having established the notion of heterogeneous treatment effects, we can consider the mean effect, i.e. \textbf{the average treatment effect} (ATE)
-    \item Often times it is the ATE that we would like to know. If we implement a policy on everyone, what would be it's average effect?
+    \item Having established the notion of heterogeneous treatment effects, we can easily grasp the idea of a mean effect for everyone in the population, i.e. \textbf{the average treatment effect} (ATE).
+   
+    \item Often times it is precisely this ATE that we would like to know: If we implement a policy on everyone, what would be it's average effect?
 
-    \item However, it's not always possible to estimate the ATE or sometimes not even desirable. The ATE for a new treatment of testicular or breast cancer is not desirable in determining it's effectualness.
+    \item However, it's not always possible to estimate the ATE or sometimes not even desirable. The ATE for a new treatment for testicular or breast cancer is not desirable in determining it's efficiency.
 
-    \item In running a medical trial, surely the participants are limited to either women or men. In this case, the average refers to the CATE, which stands for the conditional ATE, where the condition could be being male or female.
+    \item In running a medical trial for the associated drug, surely the participants are limited to either women or men. In this case, the average effect instead refers to refers to the conditional ATE (CATE), which is the ATE but conditional on being either male or female.
 \end{itemize}
 \end{frame}
 
 \begin{frame}{The average treatment effect of the treated (ATT)}
 \begin{itemize}
-      \item Because of research design (such as with DiD), we often end up estimating something else, which is the average effect for the group that gets treated, in other words the \textbf{average treatment effect of the treated} (ATT or ATET)
+      \item Because of research design (such as with DiD), we often end up estimating something else, which is the average effect for the group that gets treated, in other words the \textbf{average treatment effect of the treated} (ATT or ATET).
 
-      \item However, should we have a large random sample there is rather likely that ATT = ATE (or CATE when it's applicable)
+      \item However, should we have a large random sample there is rather likely that ATT = ATE (or CATE when it's applicable).
 
       \item As for the ATE. In a random control trial, when the sample is representative of the population the  effect corresponds to the ATE. If it's not representative, it's conditional on being in the sample.
 \end{itemize}
@@ -272,7 +315,7 @@
         \item It relies on two groups; one treated and one untreated control group. In DiD, the outcome is first measured over time for each group (the first difference) and the compared against one another (second difference). The result from these two differences can be a causal estimate. 
 
         \item Importantly, the notion of a control group is a place holder for "our best guess at what the treatment group would have been without treatment" \tiny{ (\emph{The Effect, p.450}, Huntington-Klein)}.
-        
+\normalsize
         \item \textbf{The plan} with DiD is to use the change within some untreated control group to represent all changes within the treatment group that is not due to the treatment.
 \end{itemize}
 \normalsize
@@ -282,7 +325,8 @@
         \begin{itemize}        
         \item Since out plan was to use the control group to "represent all changes \textbf{within the treatment group} that is not due to the treatment", the DiD estimate the effect for the treated group. 
 
-        \item If certain conditions are satisfied, specifically the assumption of so called \textbf{parallel trends}, the DiD estimate represents a well defined causal parameter, namely the average treatment effect of the treated (ATT). \textbf{This is the connection between DiD and causality.}
+        \item If certain conditions are satisfied, specifically the assumption of the so called \textbf{parallel trends}, the DiD estimate represents a well defined causal parameter, namely the average treatment effect of the treated (ATT). \textbf{This is the connection between DiD and causality.}
+        
         \item For the DiD estimate, therefore, we could not know if the treatment effect would be any different for other groups!        
     \end{itemize}
 \end{frame}
@@ -291,7 +335,7 @@
     \begin{itemize}
         \item Today somewhat of a cliché, but still very instructional.
         \item In 1855, John Snow (like an Aegon Targaryen) demonstrated for the first time and for the world that cholera was spread by contaminated water and not through the air. 
-        \item The culprit, water intake downstream the Thames contained all sorts of sewage waste.
+        \item The culprit, water intake downstream the river Thames contained all sorts of sewage waste.
         \item Between 1849 and 1854 a policy was implemented that required the Lambeth Company move their water intake upstream outside of London. 
         \item The results...        
     \end{itemize}
@@ -312,12 +356,11 @@
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Difference-in-Difference is still very much relevant in empirical social science research}
+\begin{frame}{Today Difference-in-Difference is still highly relevant}
 \begin{columns}
 \begin{column}{0.5\textwidth}
   \begin{itemize}
-        \item In econmics, Difference-in-Difference (or DiD) is today arguably the most widely used method for estimating causal effects in non-experimental settings. 
-        
+        \item At least in economics is Difference-in-Difference (or DiD) arguably the most widely used method for estimating causal effects in non-experimental settings. 
         \item An early and influential study is David Card (1990), \emph{The Impact of the Mariel boatlift on the Miami labor market}, IRL Review 43(2):245-257. 
     \end{itemize}
 \end{column}
@@ -335,23 +378,22 @@
     \item We are going to use the data from the paper by Kessler and Roth (2014) called \emph{Don't take "no" for an answer: And experiment with actual organ donor registrations} 
     \item Most US states have so called "opt-in" (as opposed to "opt out") organ donation programs. When you get your drivers license you can choose to partake in the organ donation program.
     \item In July 2011, California implemented a policy to switch from an "opt-in" program to one with "active choice", of either yes or no. 
-    \item Did the policy positively affect the donation rate \underline{in California}, as believed by the policy makers? 
+    \item Did the policy positively affect the donation rate \underline{in California}, as anticipated by the policy makers? 
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Organ donation rates in the US}
+\begin{frame}{*Organ donation rates in the US}
 \begin{columns}
 \begin{column}{0.5\textwidth}
   
 \begin{itemize}
-    \item Data over US organ donation rates:
+    \item The Kessler and Roth data can be retrieved from:
 \end{itemize}
-
 \href{https://github.com/DanielHalvarsson/IntroductionDiD/}{\textcolor{blue}{https://github.com/DanielHalvarsson/\\IntroductionDiD/}}
 \begin{itemize}
-    \item Download the data manually using the above link. And open the data file from within stata.
+    \item You can download the data manually using the above link. And open the data file from within Stata.
     \item Alternatively, the data can be retrieve directly from within Stata by linking directly to the 'organ\_donations.dta' file.
-    \item To follow along, you need the following Stata packages: $reghdfe$
+    \item To follow along, you need to have the following Stata packages installed: $reghdfe$
 \end{itemize}
 \end{column}
 \begin{column}{0.5\textwidth}
@@ -362,24 +404,25 @@
 \end{columns}
 \end{frame}
 
-\begin{frame}{Visualizing the organ donation rates over time}
+\begin{frame}{*Visualizing the organ donation rates over time}
+\begin{enumerate}
+    \item Lets create the following plot.
+\end{enumerate}
  \begin{center}
         \includegraphics[width=0.7\linewidth]{24_DiDLecture/24_DiDLecture_PlotAll.png}
     \end{center}
 \end{frame}
 
-
-\begin{frame}{Did the policy causally affect the donation rate 
+\begin{frame}{*Did the policy causally affect the donation rate 
 \underline{in California}?}
 \begin{columns}
 \begin{column}{0.5\textwidth}
 \begin{itemize}
     \item To answer that question, we calculate the $2\times2$ Difference-in-Difference.
-    \item Just like with the cholera example we are in the business of comparing averages.
+    \item \textbf{Just like with the cholera example we are in the business of comparing averages.}
     \item The DiD effect amounts to a  \textcolor{orange}{-2.24} percentage point reduction in organ donation rates, following the policy in California.
 \end{itemize}
 \end{column}
-
 \begin{column}{0.5\textwidth}
  \begin{center}
         \includegraphics[width=1\linewidth]{24_DiDLecture/24_DiDLecture_DiD2x2Plot.png}
@@ -391,24 +434,24 @@
     Difference-In-Difference estimate: $-0.0085 - 0.0139 =$   \textcolor{orange}{$ -0.0224$}
 \end{frame}
 
-\begin{frame}{Is the DiD estimate really the causal effect?}
+\begin{frame}{Is a DiD estimate the causal ATT effect?}
 \begin{itemize}
     \item It depends... 
 
     \item For DiD to work, we obviously need an untreated control group. Specifically, we need an untreated control group that satisfies the \textbf{parallel trends assumption}.
 
-    \item According to the parallell trends assumption:
+    \item According to the parallel trends assumption:
 \end{itemize}
   \begin{displayquote}
 "if no treatment had occurred, the difference between the treated group and the untreated group would have stayed the same in the post-treatment period as it was in the pre-treatment period."
 \flushright\tiny (\emph{The Effect, p.441}, Huntington-Klein)
 \end{displayquote}
 \begin{itemize}
-    \item Importantly, the parallel trends assumption can in no way be tested as it concerns the counterfactual, i.e. how things would have turned out, had there been no treatment.
+    \item Importantly, \textbf{the parallel trends assumption can in no way be tested} as it concerns the counterfactual, i.e. how things would have turned out, had there been no treatment.
 \end{itemize}
 \end{frame}
 
-\begin{frame}{The paralell trends assumption}
+\begin{frame}{The parallel trends assumption}
 \begin{itemize}
     \item Recall that the plan with DiD was to use the change in the untreated group to represent all non-treated related changes in the treated group. 
     \item To see what this means consider the difference in outcome for the treated group before and after the treatment as $TretmentEffect + OtherTreatedGroupChanges$    
@@ -417,17 +460,17 @@
 \begin{equation}
 TretmentEffect + OtherTreatedGroupChanges - OtherTreatedGroupChanges
 \end{equation}
-    \item For the DiD to identify only the treatment effect $OtherTreatedGroupChanges = OtherTreatedGroupChanges$, precisely as required by the parallel trends assumption.
+    \item For the DiD to identify only the treatment effect, it's required that $OtherTreatedGroupChanges = OtherTreatedGroupChanges$, precisely as stated by the parallel trends assumption!
 \end{itemize}
 \end{frame}
 
-\begin{frame}{The paralell trends assumption}
+\begin{frame}{The parallel trends assumption}
 \fbox{\begin{minipage}{\textwidth}
 \textcolor{orange}{if no treatment had occurred, the difference between the treated group and the untreated group would have stayed the same in the post-treatment period as it was in the pre-treatment period.}    
 \end{minipage}}
 \vspace{0.3cm}
 \begin{itemize}
-    \item To unpack this. Let's imagine the counterfactual world where no treatment has or will ever happened. 
+    \item To unpack this equality. Let's imagine the counterfactual world where no treatment has or will ever happened. 
     \item  If the parallel trends assumption holds, then the outcome for both the treated and untreated groups should experience the same change over time.
     \item But if they experience the same change over time, it must be also the case that $OtherTreatedGroupChanges = OtherTreatedGroupChanges$.
     \item Since we don't live in the counterfactual world, we can never know whether this any of this is true.  
@@ -439,7 +482,7 @@ TretmentEffect + OtherTreatedGroupChanges - OtherTreatedGroupChanges
     \item Even if the parallel trends assumption can't be tested, there are goods signs to look for. 
         \begin{enumerate}
         \item We can not think of a good reason for why the outcome in the untreated group would suddenly change at the time of treatment.
-        \item The characteristics of the treated and untreated groups generally similar.
+        \item The characteristics of the treated and untreated groups are generally similar.
         \item Looking at time periods leading up to the treatment date, the dependent variable evolves similarly for the treated and untreated group.   
         \end{enumerate}
     \item What it often times comes down to in practice is to pick a control group such that 1-3 is believable.
@@ -451,29 +494,29 @@ TretmentEffect + OtherTreatedGroupChanges - OtherTreatedGroupChanges
     \item The parallel trends assumption is not only an assumption about causality, but also about the gap (or difference) that is supposed to remain constant.
     \item Therefore, if the parallel trends assumption holds for some '$Y$' it does not hold for transformations of '$Y$', which includes '$\log Y $'
     \item It is easy to see that if the gap before the treatment was e.g. $20-10 = 10$ and the counterfactual difference after the treatment was $25-15 = 10$, in logs we get $\ln 20 - \ln 10\approx0.3$ and $\ln 25 - \ln 15\approx0.22$. 
-    \item Finally, there is a risk of pre-testing, as it can cause statistical problems by potentially contaminating your design.
+    \item Finally, there is a risk associated with pre-testing, as it can cause statistical problems by potentially contaminating your design.
 \end{itemize}
 \end{frame}
 
 \begin{frame}{How can we check if our untreated group is appropriate?}
 \begin{itemize}
-\item Even if we can't test the parallel trends assumption, we can and should test for common pre-trends (good sign nr. 3), \textbf{IF} we have more than two time periods.
+\item Even if we can't test the parallel trends assumption, we can and should test for common pretrends (good sign nr. 3), \textbf{IF} we have more than two time periods.
 \item The second test we can do is a \emph{placebo test}. It means that we throw out all the dates for which the treatment was in effect and pick different periods before the actual treatment to see if the same DiD analysis gives a zero effect.
-\item If the placebo test would show up significant, we can count that as evidence that something can be awry with the paralell trends assumption. 
-\item However, with more than two time periods we should move DiD into a regression framework.
+\item If the placebo test would show up significant, we can count that as evidence that something can be problematic with the parallel trends assumption. 
+\item However, with more than two time periods we should preferably move our DiD analysis into a regression framework.
 \end{itemize}
 \end{frame}
 
 \begin{frame}{Difference-in-Difference in a regression setting}
 \begin{itemize}
-\item For the $2\times2$ DiD analysis with two groups and two periods, we can reach exactly the same DiD estimate by using a regression.
-\item Instead of the tedious comparing of means, we can simply estimate the following regression model:
+\item For the $2\times2$ DiD analysis with two groups and two periods, we can reach exactly the same DiD estimate by using a regression. Isn't that neat!
+\item Instead of tediously comparing means, we can instead estimate the following regression model for some outcome 'Y':
 \begin{align}
 Y = &\beta_0 + \beta_1 AfterTreatment + \beta_2 TreatedGroup\\ \nonumber
 &+ \beta_3 AfterTreatment \times TreatedGroup + \epsilon
 \end{align}
 \item with  $AfterTreatment$ being a dummy variable that takes the value of one the period after treatment and zero the period before treatment.
-\item and where $TreatedGroup$ is a dummy variable that takes the value of one for the trewated group and the and zero for the untreated group. 
+\item and where $TreatedGroup$ is a dummy variable that takes the value of one for the treated group and the and zero for the untreated group. 
 \item  $AfterTreatment \times TreatedGroup$ is an interaction term that takes the value of one for the treated group after treatment, and zero otherwise.
 \end{itemize}
 \end{frame}
@@ -481,24 +524,22 @@ Y = &\beta_0 + \beta_1 AfterTreatment + \beta_2 TreatedGroup\\ \nonumber
 \begin{frame}{Difference-in-Difference in a regression setting}
 \begin{itemize}
 \item Exactly the same DiD estimate as before is here given by $\hat{\beta}_3$.
-\item This is fairly easy to see. Considering the average outcomes across the four different groups: 
+\item This is fairly easy to see. Considering the average outcomes (Y) across the four different groups: 
     \begin{itemize}
     \item $TreatedGroup=0$ and $AfterTreatment=0$ gives $Y=\beta_0$ 
     \item $TreatedGroup=0$ and $AfterTreatment=1$ gives $Y=\beta_0 + \beta_1$ 
     \item $TreatedGroup=1$ and $AfterTreatment=0$ gives $Y=\beta_0 + \beta_2$ 
     \item $TreatedGroup=1$ and $AfterTreatment=1$ gives $Y=\beta_0+\beta_1+\beta_2+\beta_3$ 
     \end{itemize}
-\item Now take the difference for the untreated group before and after treatment  $\beta_0 +\beta_1 -\beta_0 = \beta_1$
+\item Now take the difference for the untreated group after and before treatment  $\beta_0 +\beta_1 -\beta_0 = \beta_1$
 \item Take the same difference but for the treated group  $\beta_0 +\beta_1 +\beta_2 + \beta_3 - \beta_0 -\beta_2= \beta_1+\beta_3$
-\item To get the DiD, subtract the untreated difference from the treated difference to get $DiD = \beta_1 + \beta_3 - \beta_1 = \beta_3$
+\item To get the DiD, subtract the untreated difference from the treated difference to get $\beta_1 + \beta_3 - \beta_1 = \beta_3 = DiD$ according to the definition of DiD.  
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Generalization of DiD to many periods}
-\begin{itemize}
-\item For now we only consider one common effect for the treated group. Later we will allow for dynamic treatment effects.
-\item Even with more periods, it's always possible to estimate the $2\times2$ DiD by combining time periods or by aggregating data. 
-\item But first, note a powerful way of rewriting the regression
+\begin{frame}{Leveraging DiD by using fixed-effects regression}
+\begin{itemize} 
+\item Note that a powerful way of rewriting the DiD regression given by
 \begin{align}
 Y = &\beta_0 + \beta_1 AfterTreatment + \beta_2 TreatedGroup\\ \nonumber
 &+ \beta_3 AfterTreatment \times TreatedGroup + \epsilon.
@@ -510,7 +551,7 @@ Y = \alpha_g + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilo
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Leveraging DiD by using fixed-effects regression}
+\begin{frame}{Two way fixed effect (TWFE) model }
 \begin{itemize}
 \item In the DiD specification with fixed effects 
 \begin{equation}
@@ -520,11 +561,11 @@ it is clear that DiD uses so called "within" variation to identify the effect.
 \item What ever \emph{unobservable} variation that does not change over the period for each group or time period is controlled for in the model and can not contaminate the "effect".    
 \item But why stop there, if the treated and untreated groups are comprised of individual workers, firms, or states, we can shift the level of fixed effects from $\alpha_g$ to $\alpha_i$, where the index $i$ stands for individual units.  
 \item This model is called the \textbf{Two Way Fixed Effects} or \textbf{TWFE model}, and is the work horse in many DiD applications.
-\item For individuals $\alpha_i$ would capture characteristics such as personality, upbringing, ability, gender to the extent they are correlated with Y or the treatment
+\item Suppose that individuals are the unit of analysis $i$, then $\alpha_i$ would capture characteristics such as personality, upbringing, ability, gender to the extent they are correlated with Y.
 \end{itemize}
 \end{frame}
 
-\begin{frame}{Let's return to the Kessler and Roth data and run some regressions!}
+\begin{frame}{*Let's return to the Kessler and Roth data and run some regressions!}
 \begin{enumerate}
 \item We start by estimating 
 \begin{align}\label{eq:reg}
@@ -549,9 +590,11 @@ Y = \alpha_i + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilo
 \end{enumerate}
 \end{frame}
 
-\begin{frame}{Are the DiD design supportive of the parallel trends assumption?}
+\begin{frame}{*Are the DiD design supportive of the parallel trends assumption?}
     \begin{itemize}
-\item With more than two periods in the data, we can have a look at pretrends and run placebo tests. 
+\item With more than two periods in the data, we can have a look at pretrends and run placebo tests. Up until now we have considered only two periods by aggregating quarterly data. 
+\item When testing the robustness of the DiD design, we make use of information from separate quarters. Later we will fully exploit all data in the analysis when we look at DiD with dynamic treatment effects.
+
 \begin{enumerate}
     \item Let's plot the pretrends
     \item Test for diverging pretrends. Specifically, we estimate the model with possibly different linear time trends before treatment. 
@@ -560,7 +603,7 @@ Y = \alpha_i + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilo
     \end{equation}
     where $TimePeriods$ is a count variable for the periods leading up to the treatmentperiod. In the model $\beta_1$ is the slope estimate of the pretrend for untreated group. For the treated group the slope estimate for the pretrend is given by  $\beta_1 + \beta_2$.\\
     \vspace{0.2cm}
-    Thus, if we can't reject $H_0$ that $\beta_2=0$, then we we can draw the conclusion that the best linear approximation of the average pre-trends for the treated and untreated groups are probably the same.
+    Thus, if we can't reject $H_0$ that $\beta_2=0$, then we we can draw the conclusion that the best linear approximation of the average pretrends for the treated and untreated groups are probably the same.
 \end{enumerate}
 \end{itemize}
 \end{frame}
@@ -580,13 +623,14 @@ Y = \alpha_i + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilo
        \item In the basic DiD setting, you generally wont fix a violation in the parallel trends assumption by adding a bunch of covariates.
        \item Why?
        \item Because time invariant covariates are already controlled for by the fixed effect version of the DiD.
-       \item Adding time-varying covariates can destroy identification if they themselves are caused by the treatment.
-       \item A common option is to look for a better control group by using some form of \textbf{statistical matching}, e.g. propensity score matching.
+       \item Adding time-varying covariates can incidentally destroy identification if they themselves are caused by the treatment.
+       \item A common approach is to instead look for a better control group by using some form of \textbf{statistical matching}, e.g. propensity score matching.
        \item If matching is successful, there is a good chance that the parallel trends assumption is more likely to hold.
+       \item In this course, I have not chosen to further pursue matching, which is vast topic on it's own.
    \end{itemize}
 \end{frame}
 
-\begin{frame}{Dynamic DiD: long-term effects}
+\begin{frame}{Dynamic DiD and long-term effects}
     \begin{itemize}
         \item So far, even with access to multiple periods, we have lumped the periods together in the period before and after treatment
         \item However, by only looking at one potential effect, useful information about how the effect changes over time may be lost.
@@ -600,7 +644,7 @@ Y = \alpha_i + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilo
     \end{itemize}
 \end{frame}
 
-\begin{frame}{Let's code the dynamic DiD}
+\begin{frame}{*Let's code the dynamic DiD}
     \begin{enumerate}
         \item Using the organ donation data, let's code the dynamic version of the DiD.
         \item What is the interpretation?
@@ -614,7 +658,7 @@ Y = \alpha_i + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilo
 \begin{frame}{Interpreting the dynamic DiD results}
 \begin{itemize}
 \item Near zero effects during the pretreatment period (compared to Q22011)
-\item One badly behaving pre-treatment effect
+\item One badly behaving pre-treatment effect.
 \item Yet, three distinct negative effects immediately following the policy.
 \item In accordance with the $2\times2$ DiD design, the dynamic DiD finds a -2.2 percentage point decrease in organ donation rates in California as a result of active choice.
 \end{itemize}
@@ -626,7 +670,7 @@ Y = \alpha_i + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilo
 \item In addition to the additional insights that about treatment-effect dynamics
 \item The dynamic DiD provides a direct test for parallel \textbf{pre}trends (a type of placebo test).
 \item For each of the pretreatment gaps, they should not be larger or smaller compared to the gap before the treatment takes place, i.e. the reference.
-\item With many pre-periods, however, there can be significant effects due to pure chance. 
+\item With many pre-periods, however, there can be significant effects due to pure chance. Thus, the one badly behaved estimate does not necessarily imply the end of the world!
 \end{itemize}
 \end{frame}
 
@@ -634,8 +678,7 @@ Y = \alpha_i + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilo
 \begin{itemize}
 \item However, as three are less data devoted to estimating each of the effects, expect less precise estimate.
 \item Even if the individual effects is significant, the average overall effect can still be significant!  
-\item However, when there are many treated groups with varying treatment timing, dynamic DiD can not be trusted.
-
+\item Lastly, while the dynamic specification is a powerful tool when there are one treated group, it can no longer be trusted when there are many treated groups with varying treatment timing.
 \end{itemize}
 \end{frame}
 
@@ -718,43 +761,21 @@ Y = \alpha_i + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilo
           
       \end{wideitemize}
 \end{frame}
-        
-      \begin{frame}{Goodman-Bacon Decomposition}
-      \begin{wideitemize}
-          
-      \item An influential paper, Goodman-Bacon (2021) showed that TWFE estimators in a staggered setting can be expressed as a weighted average of the of all underlying DiDs.
-    
-      \item \textbf{Their contribution} was the insight that some of the DiDs are actually confounded despite them individually satisfying the common trend + no anticipation assumptions!
-      \item There are 4 types of DiD comparisons between treated and control implicitly made in the TWFE model 
-      \begin{enumerate}
-      \item Treated (early and late) vs. Never treated DiDs
-      \item Early vs. Late DiDs
-      \item Late vs. Early DiDs $\skull$
-      \end{enumerate}
-       The potentially problematic comparison being the 'Late vs. Early' where a treatment group is compared to a group that is already treated!
-.   
-      \item How large is the problem: Use  \textbf{bacondecomp} in Stata for Goodman-Bacon decomposition.  
-      \end{wideitemize}
-\end{frame}
-
 
 \begin{frame}{What to do with staggered timing in DiD?}
 
   \begin{center}
-      "What to do then, when we have a nice roll-out design? Don't use two-way fixed effects, but also don't despair. \textbf{You're not out of luck, you're just moving into the realm of what the pros do}." \color{gray}{(The effect)}
+      "What to do then, when we have a nice roll-out design? Don't use two-way fixed effects, but also don't despair. \textbf{You're not out of luck, you're just moving into the realm of what the pros do}."  \tiny (\emph{The Effect, p.460}, Huntington-Klein)
   \end{center}
   
-  \begin{wideitemize}
+  \begin{itemize}
   \item There's really no reason to use the baseline TWFE in staggered timings
-    \begin{itemize}
-    \item A perfect example wherein the estimator does not generate an
-      estimate that maps to a meaningful estimand
-    \end{itemize}
-  \item There are different approaches proposed in the literature  that are just as good! 
-    \begin{itemize}
+    \item TWFE is a perfect example wherein the estimator does not generate an
+      estimate that maps to a meaningful estimand such as the ATT.
+
+  \item There are different approaches proposed in the literature that are just as good.
     \item Let's have a loo at Sun and Abraham (2020), which extends the dynamic DiD model to account for the different treatment effects for different groups.     
     \end{itemize}
-  \end{wideitemize}
 \end{frame}
 
 \begin{frame}{Modified event-study design: Sun and Abraham, 2020}
@@ -766,20 +787,21 @@ Y = \alpha_i + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilo
         \item It keeps track on the already treated groups so that they don't get included in comparisons.
     \end{itemize}
     
-    \item Second, Sun and Abraham then propose that the relative time dummies are \textbf{interacted} with group dummies such that each treated $group\times relative-time-dummies$ get their own effect. 
+    \item Second, Sun and Abraham then propose that the relative time dummies are \textbf{interacted} with group dummies such that each treated $TreatedGroup_k\times RelativeTimeDummy$ get their own effect. 
     
-    \item It's then up to you to avoid making bad comparisons when averaging coefficients to get e.g. the time-varying treatment effect (see example below).
+    \item It's then up to you to avoid making bad comparisons when averaging coefficients to get ATT (see example below).
 
     \item Each effect is either compared to the group of (i) never treated observation or (ii) not yet treated observations (from the last treated group(s)).
 \end{wideitemize}
 \end{frame}
 
-\begin{frame}{Modified event-study design: Sun and Abraham, 2020}
+\begin{frame}{*Modified event-study design: Sun and Abraham, 2020}
 \begin{itemize}
     \item Sun and Abraham (2020) can be accessed in Stata using the \textbf{eventstudyintereact} package.
 \end{itemize}
 \begin{enumerate}
-    \item Let's try it out!
+    \item Let's try it out for data over female wages and union memberships.\\
+  We load the nlswork.dta data from  \href{https://github.com/DanielHalvarsson/IntroductionDiD/}{\textcolor{blue}{https://github.com/DanielHalvarsson/IntroductionDiD/}}
 \end{enumerate}
 \vspace{0.5cm}
     \begin{center}
@@ -787,7 +809,7 @@ Y = \alpha_i + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilo
     \end{center} 
 \end{frame}
 
-\begin{frame}{Interpreting the results from the union application}
+\begin{frame}{*Interpreting the results from the union application}
 \begin{itemize}
     \item The gap between treated and untreated in the pretreatment period is smaller compared to the gap in the period before treatment.
     \item Why?
@@ -797,10 +819,24 @@ Y = \alpha_i + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilo
 \end{itemize}
 \end{frame}
 
+
+
+\begin{frame}{What's next}
+\begin{itemize}
+    \item Three excellent resources further study about all things difference-in-difference and other techniques, e.g. three excellent books: \textbf{The Effect} by Nick Huntington-Klein, \textbf{Causal Inference: A mixed tape} by Scott Cunningham, both of which are modern and slightly more accessible than \textbf{Mostly Harmless Econometrics} by Joshua Angrist and Jörn-Steffen Pischke.
+    \item There are also excellent survey papers covering many recent contributions to the field, including techniques suitable for roll-out design: \textbf{What’s trending in difference-in-differences? A synthesis of the recent econometrics literature} by Jonathan Roth, Pedro H.C. Sant’Anna, Alyssa Bilinski and John Poe, and \textbf{Designing difference in difference studies with staggered treatment adoption: key concepts and practical guidelines} by Seth Freedman, Alex Hollingsworth, Kosali Simon, Coady Wing, ad Madeline Yozwiak. 
+\end{itemize}
+\end{frame}
+
+\begin{frame}{\centering Thank you!}
+\begin{itemize}
+\item Ýou find a home assignment on \href{https://github.com/DanielHalvarsson/IntroductionDiD/}{\textcolor{blue}{https://github.com/DanielHalvarsson/IntroductionDiD/}}
+\item Next time we meet on November 25, we'll go through it. 
+\item In the mean time, if you have questions, my email is \href{daniel.halvarsson@ratio.se}{\textcolor{blue}{daniel.halvarsson@ratio.se}}
+\item Good luck!
+\end{itemize}
+
+\end{frame}
+
 \end{document}
 
--Show them how to use regress from the menue 
--Programs that we use 
--Upload do-files
--Pdf
--Find funny DiD excersizes
