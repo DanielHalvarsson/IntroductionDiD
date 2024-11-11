@@ -62,10 +62,10 @@
 \DeclareMathOperator{\Supp}{Supp}
 
 % These are my colors -- there are many like them, but these ones are mine.
-\definecolor{blue}{RGB}{0,114,178}
-\definecolor{red}{RGB}{213,94,0}
-\definecolor{yellow}{RGB}{240,228,66}
-\definecolor{green}{RGB}{0,158,115}
+\definecolor{blue}{RGB}{0,115,177}
+\definecolor{red}{RGB}{217,90,0}
+\definecolor{yellow}{RGB}{239,227,63}
+\definecolor{green}{RGB}{0,159,111}
 
 \hypersetup{
   colorlinks=false,
@@ -75,7 +75,7 @@
 
 
 %% I use a beige off white for my background
-\definecolor{MyBackground}{RGB}{255,253,218}
+\definecolor{MyBackground}{RGB}{250,250,218}
 
 %% Uncomment this if you want to change the background color to something else
 %\setbeamercolor{background canvas}{bg=MyBackground}
@@ -103,17 +103,6 @@
 \setbeamercolor{button}{bg=MyBackground,fg=blue,}
 
 
-
-% If you like road maps, rather than having clutter at the top, have a roadmap show up at the end of each section 
-% (and after your introduction)
-% Uncomment this is if you want the roadmap!
-% \AtBeginSection[]
-% {
-%    \begin{frame}
-%        \frametitle{Roadmap of Talk}
-%        \tableofcontents[currentsection]
-%    \end{frame}
-% }
 \setbeamercolor{section in toc}{fg=blue}
 \setbeamercolor{subsection in toc}{fg=red}
 \setbeamersize{text margin left=1em,text margin right=1em} 
@@ -175,7 +164,6 @@
 \tikzstyle{every picture}+=[remember picture] 
 \tikzstyle{mybox} =[draw=black, very thick, rectangle, inner sep=10pt, inner ysep=20pt]
 \tikzstyle{fancytitle} =[draw=black,fill=red, text=white]
-%%%% END TIKZ STUFF
 
 % Title Slide
 \begin{frame}
@@ -191,7 +179,7 @@
 \item Understanding the parallel trends assumption
 \item *Evaluating research design (testing pretreatment trends and placebo tests)
 \item *Dynamic Difference-in-Difference with multiple time periods
-\item *Difference-in-Difference with roll-out design 
+\item *Difference-in-Difference with a roll-out design 
 \end{enumerate}
 \vspace{0.5cm}
 Topics with an * includes a step-by-step coding exercise where you are invited to follow along in Stata. 
@@ -204,7 +192,7 @@ Topics with an * includes a step-by-step coding exercise where you are invited t
 
     \item Much of this course is based on the book "The Effect" by Nick Huntington-Klein, which provides an excellt resource for not just Difference-in-Difference, but empirical research techniques and methods in general.
 
-    \item The Effect is open source and can be freely accessed via 
+    \item The Effect is open source and can be freely accessed from 
     \href{https://theeffectbook.net/}{\textcolor{blue}{https://theeffectbook.net/}}
 \end{itemize}
 \end{frame} 
@@ -259,20 +247,19 @@ Topics with an * includes a step-by-step coding exercise where you are invited t
 
 
 
-\begin{frame}{Causal effects among a sea of confounders}
+\begin{frame}{Causal effects in a sea of confounders}
     \begin{center}
-        \includegraphics[width=0.8\linewidth]{24_DiDLecture/24_DiDLecture_DAG.png}
+        \includegraphics[width=0.7\linewidth]{24_DiDLecture/24_DiDLecture_DAG.png}
     \end{center}
     \flushright
     \tiny{ (\emph{The Effect, p.450}, Huntington-Klein)}.
 \normalsize
 \flushleft
-    \vspace{0.1cm}
     \begin{itemize}
     \item In answering a causal research question we need to account for other variables that also contribute to the the outcome in question, one way or another. 
     \item In the example DAG, without appropriate control for LaggedCrime, we could e.g. erroneously attribute higher crime rates to less PolicePerCapita.    
-    \item There are many way to accomplish this: using control variables, taking advantage of different fixed effects, randomization, using variation from a natural experiment, choosing an appropriate control group.
-    \item Ultimately it depends on the question what we need to do, but also the assumptions underlying the method we choose.
+    \item There are many ways to accomplish this: using control variables, taking advantage of different fixed effects, randomization, using variation from a natural experiment, choosing an appropriate control group.
+    \item Ultimately it depends on the question, what we need to do, but also the assumptions underlying the method we choose.
     \end{itemize}
 \end{frame}
 
@@ -480,11 +467,15 @@ TretmentEffect + OtherTreatedGroupChanges - OtherTreatedGroupChanges
 \begin{frame}{Three good reasons for why your DiD design is believable}
 \begin{itemize}
     \item Even if the parallel trends assumption can't be tested, there are goods signs to look for. 
+    \end{itemize}
+
         \begin{enumerate}
         \item We can not think of a good reason for why the outcome in the untreated group would suddenly change at the time of treatment.
         \item The characteristics of the treated and untreated groups are generally similar.
         \item Looking at time periods leading up to the treatment date, the dependent variable evolves similarly for the treated and untreated group.   
         \end{enumerate}
+        \begin{itemize}
+
     \item What it often times comes down to in practice is to pick a control group such that 1-3 is believable.
 \end{itemize}
 \end{frame}
