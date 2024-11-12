@@ -1,0 +1,108 @@
+\documentclass[12pt]{article}
+
+\usepackage{answers}
+\usepackage{setspace}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{multicol}
+\usepackage{mathrsfs}
+\usepackage{xcolor}
+ \usepackage{hyperref}
+\usepackage[margin=1in]{geometry} 
+\usepackage{amsmath,amsthm,amssymb}
+ \usepackage{tikz}
+  \usetikzlibrary{patterns,arrows,decorations.pathreplacing}
+ \usepackage{pgfplots}
+%\usepackage[hang]{footmisc}
+%\setlength{\footnotemargin}{0.2cm}  
+\pgfplotsset{compat=1.14}
+ 
+ 
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\R}{\mathbb{R}}
+
+\DeclareMathOperator{\sech}{sech}
+\DeclareMathOperator{\csch}{csch}
+ 
+\newenvironment{theorem}[2][Theorem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{definition}[2][Definition]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{proposition}[2][Proposition]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{lemma}[2][Lemma]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{exercise}[2][Exercise]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{solution}[2][Solution]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{problem}[2][Problem]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{question}[2][Question]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+\newenvironment{corollary}[2][Corollary]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}\hskip \labelsep {\bfseries #2.}]}{\end{trivlist}}
+ 
+\begin{document}
+\author{Daniel Halvarsson\\ daniel.halvarsson@ratio.se} %if necessary, replace with your
+
+\title{Problem set}
+\maketitle
+%replace with the appropriate homework number
+\date{}
+\noindent This homework contains a problem set to accompany 'Causal Data Analysis and Difference-in-Difference - A Short Course'. It's is based on data from the study "Does strengthening self-defends law deter crime or escalate violence? Evidence from expansions of the castle doctrine", by Cheng and Hoekstra (2013). As described by the title, the study seeks to evaluate the extension of the castle doctrine, which allows the use of lethal force also outside of the home (i.e. one's castle) and it's effect on violence like homicide in the treated states.
+
+You find data called castle.dta in the $data$ folder at \href{https://github.com/DanielHalvarsson/IntroductionDiD/}{\textcolor{blue}{https://github.com/DanielHalvarsson\\ /IntroductionDiD/}}, which covers 50 states with name given by the variable $state$ and id-variable given by $sid$. The data covers the period 2000-2010, with year information given in the variable $year$. The log homicide rate is given by $l\_homicide$, whereas the the treated years for the treated states is captured by the dummy variable $post$.\footnote{Note that this variable can be interpreted as an interaction term}. The policy follows a so called roll-out design, which means that it was implemented at different years in different states.
+
+\begin{enumerate}
+    \item To get some idea about the scope of the reform, use the variables $post$, $state$ and $year$ to provide descriptive statistics about the reform
+    \begin{itemize}
+        \item Using the information in $post$, tabulate the number of years for which the policy was in place. 
+        \item From the information $post$ and $sid$, determine how many states that is part of the treated group.
+        \item For the state of Florida, plot the homicide rate over the period.
+        \item Create a variable that collect the number of treated observations for each state called $count\_treated\_obs$ by using the command 
+\begin{verbatim}
+egen count_treated_obs = sum(post), by(sid),
+\end{verbatim}
+        Using the information in this variable create a new variable called $never\_treated$, which takes the value of 1 if the state has zero treated observations and 0 otherwise (i.e. if the state has at least one treated observation).
+        \item Next, create a new variable called $avg\_untreated$, which contains the average homicide for all the untreated states for each year.
+        \item Plot the average homicide rate for all untreated states over time together with the homicide rate for Florida in the same plot.
+    \end{itemize}  
+    \item Focusing Florida as the treated group, we want to estimate the causal effect of the expanded castle doctrine on homicide rates in the state. 
+    \begin{itemize}
+        \item Using the \emph{never treated} group of states as the control group, use regression analysis to estimate the effect by Difference-in-Difference. To the estimate the DiD, use either the interacted version given by
+    \begin{align}
+Y = &\beta_0 + \beta_1 AfterTreatment + \beta_2 TreatedGroup\\ \nonumber
+&+ \beta_3 AfterTreatment \times TreatedGroup + \epsilon.
+\end{align}
+or the fixed-effect version given by,
+\begin{equation}
+Y = \alpha_g + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilon.
+    \end{equation}
+Note that the variable $post$ in the data describes the interaction term $AfterTreatment \times TreatedGroup$.
+\item Inspect the pre-trend in homicide for the treated and untreated group. Based on inspection, do you think it is supportive of the parallel trends assumption? 
+\end{itemize}
+\item Instead of focusing on Florida, we are going to estimate the DiD for all treated states and exploit the roll-out design feature of the policy implementation.
+\begin{itemize}
+\item In the data set, there are numerous lead and lag dummy variables that correspond to the relative year since treatment for each of the treated states. The dummy lead1, for example, takes the value of 1 for one year before treatment and lag4 the value of 1 four years after treatment. Use these variables to estimate the effect on homicide using the DiD model from Sun and Abraham (2021) "Estimating dynamic treatment effects in event studies with heterogeneous treatment effects" in the Stata program \textbf{eventstudyinteract}. Make sure that you have the following programs installed
+\begin{verbatim}
+ssc install avar
+ssc install reghdfe
+ssc install ftools
+\end{verbatim}
+
+\item Try to plot the results using the strategy in the eventstudyinteract help file.
+
+\begin{verbatim}
+coefplot , vertical
+\end{verbatim}
+\end{itemize}
+
+\end{enumerate}
+
+\emph{Good luck!}
+
+
+ \end{document}
