@@ -81,7 +81,8 @@ or the fixed-effect version given by,
 \begin{equation}
 Y = \alpha_g + \alpha_{t} + \beta_3 AfterTreatment \times TreatedGroup + \epsilon.
     \end{equation}
-Note that the variable $post$ in the data describes the interaction term $AfterTreatment \times TreatedGroup$.
+Estimate each model with cluster robust standard error at the level of $sid$. Note that the variable $post$ in the data describes the interaction term $AfterTreatment \times TreatedGroup$.
+\item Interpret the DiD estimate.
 \item Inspect the pre-trend in homicide for the treated and untreated group. Based on inspection, do you think it is supportive of the parallel trends assumption? 
 \end{itemize}
 \item Instead of focusing on Florida, we are going to estimate the DiD for all treated states and exploit the roll-out design feature of the policy implementation.
