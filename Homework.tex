@@ -70,7 +70,7 @@ egen count_treated_obs = sum(post), by(sid),
         \item Next, create a new variable called $avg\_untreated$, which contains the average homicide for all the untreated states for each year.
         \item Plot the average homicide rate for all untreated states over time together with the homicide rate for Florida in the same plot.
     \end{itemize}  
-    \item Focusing Florida as the treated group, we want to estimate the causal effect of the expanded castle doctrine on homicide rates in the state. 
+    \item Focusing on Florida as the treated group, we want to estimate the causal effect of the expanded castle doctrine on homicide rates in the state. 
     \begin{itemize}
         \item Using the \emph{never treated} group of states as the control group, use regression analysis to estimate the effect by Difference-in-Difference. To the estimate the DiD, use either the interacted version given by
     \begin{align}
