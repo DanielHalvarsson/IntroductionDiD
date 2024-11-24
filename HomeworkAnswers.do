@@ -2,7 +2,7 @@
 * Homework 2024-11-25
 
 * Open crime data 
- use "\\micro.intra\mydocs\mydocs\haldan\my documents\InBox\castle.dta"
+ use "\\...\castle.dta"
 
 * Always look at the data 
 
